@@ -26,13 +26,9 @@ class Clash
         header('profile-update-interval: 24');
         header("content-disposition:attachment;filename*=UTF-8''".rawurlencode($appName));
         header("profile-web-page-url:" . config('v2board.app_url'));
-        $defaultConfig = base_path() . '/resources/rules/default.clash.yaml';
-        $customConfig = base_path() . '/resources/rules/custom.clash.yaml';
-        if (\File::exists($customConfig)) {
-            $config = Yaml::parseFile($customConfig);
-        } else {
-            $config = Yaml::parseFile($defaultConfig);
-        }
+        $classicConfig = base_path() . '/resources/rules/classic.clash.yaml';
+        $config = Yaml::parseFile($classicConfig);
+
         $proxy = [];
         $proxies = [];
 
@@ -152,7 +148,7 @@ class Clash
                     $array['ws-opts']['path'] = $wsSettings['path'];
                 if (isset($wsSettings['headers']['Host']) && !empty($wsSettings['headers']['Host']))
                     $array['ws-opts']['headers'] = ['Host' => $wsSettings['headers']['Host']];
-                if (isset($wsSettings['security'])) 
+                if (isset($wsSettings['security']))
                     $array['cipher'] = $wsSettings['security'];
             }
         }
@@ -275,7 +271,7 @@ class Clash
         $array['port'] = (int)$firstPort;
         if (count($parts) !== 1 || strpos($parts[0], '-') !== false) {
             $array['ports'] = $server['port'];
-            $array['mport'] = $server['port'];   
+            $array['mport'] = $server['port'];
         }
         $array['udp'] = true;
         $array['skip-cert-verify'] = $server['insecure'] == 1 ? true : false;

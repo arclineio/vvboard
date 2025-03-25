@@ -25,6 +25,14 @@ class Loon
         header("content-disposition:attachment;filename*=UTF-8''".rawurlencode($appName).".conf");
         header("Subscription-Userinfo: upload={$user['u']}; download={$user['d']}; total={$user['transfer_enable']}; expire={$user['expired_at']}");
 
+        $defaultConfig = base_path() . '/resources/rules/default.loon.conf';
+        $customConfig = base_path() . '/resources/rules/custom.loon.conf';
+        if (\File::exists($customConfig)) {
+            $config = Yaml::parseFile($customConfig);
+        } else {
+            $config = Yaml::parseFile($defaultConfig);
+        }
+
         $proxies = '';
         $proxyGroup = '';
         foreach ($servers as $item) {
@@ -59,7 +67,6 @@ class Loon
         // Subscription link
         $subsURL = Helper::getSubscribeUrl($user['token']);
         $subsDomain = $_SERVER['HTTP_HOST'];
-        $defaultConfig = base_path() . '/resources/rules/default.loon.conf';
 
         $config = file_get_contents("$defaultConfig");
         $config = str_replace('$subs_link', $subsURL, $config);
