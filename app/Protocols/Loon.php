@@ -28,9 +28,9 @@ class Loon
         $defaultConfig = base_path() . '/resources/rules/default.loon.conf';
         $customConfig = base_path() . '/resources/rules/custom.loon.conf';
         if (\File::exists($customConfig)) {
-            $config = Yaml::parseFile($customConfig);
+            $config = file_get_contents("$customConfig");
         } else {
-            $config = Yaml::parseFile($defaultConfig);
+            $config = file_get_contents("$defaultConfig");
         }
 
         $proxies = '';
