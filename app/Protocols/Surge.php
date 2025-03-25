@@ -22,7 +22,7 @@ class Surge
         $user = $this->user;
 
         $appName = config('v2board.app_name', 'V2Board');
-        header("content-disposition:attachment;filename*=UTF-8''".rawurlencode($appName).".conf");
+        header('Content-Disposition: attachment; filename="'.$appName.'.conf"');
 
         $proxies = '';
         $proxyGroup = '';
@@ -136,7 +136,7 @@ class Surge
                     array_push($config, "ws-path={$wsSettings['path']}");
                 if (isset($wsSettings['headers']['Host']) && !empty($wsSettings['headers']['Host']))
                     array_push($config, "ws-headers=Host:{$wsSettings['headers']['Host']}");
-                if (isset($wsSettings['security'])) 
+                if (isset($wsSettings['security']))
                     array_push($config, "encrypt-method={$wsSettings['security']}");
             }
         }
@@ -195,7 +195,7 @@ class Surge
             "password={$password}",
             "download-bandwidth={$server['up_mbps']}",
             $server['server_name'] ? "sni={$server['server_name']}" : "",
-            // 'tfo=true', 
+            // 'tfo=true',
             'udp-relay=true'
         ];
         if (!empty($server['insecure'])) {

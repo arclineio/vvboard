@@ -284,6 +284,15 @@ rule-providers:
       url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Game/Game_No_Resolve.yaml,
       path: "./RuleProviders/Game.yaml",
     }
+  Telegram:
+    {
+      type: http,
+      behavior: classical,
+      format: yaml,
+      interval: 86400,
+      url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Telegram/Telegram_No_Resolve.yaml,
+      path: "./RuleProviders/Telegram.yaml",
+    }
   Global:
     {
       type: http,
@@ -321,6 +330,7 @@ rules:
   - RULE-SET, Crypto ,🪙 Crypto
   - RULE-SET, Cryptocurrency ,🪙 Crypto
   - RULE-SET, Game, 🎮 Game
+  - RULE-SET, Telegram, 📟 Telegram
   - RULE-SET, Global, 🚀 Proxy
   - RULE-SET, Lan, 🎯 Direct
   - GEOIP, CN, 🎯 Direct
