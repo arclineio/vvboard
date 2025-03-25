@@ -1,28 +1,16 @@
 # SUBSCRIBED $subs_link interval=43200 strict=true
 
 mode: rule
-ipv6: true
-allow-lan: true
-bind-address: "*"
-mixed-port: 7890
 log-level: error
-external-controller: 0.0.0.0:9090
-# ClashMeta/Mihomo Parameters
-unified-delay: true
-tcp-concurrent: true
-
-tun:
-  enable: true
-  stack: system
-  auto-route: true
 
 dns:
-  enable: true
-  cache-algorithm: arc
-  listen: 0.0.0.0:1053
-  ipv6: true
-  enhanced-mode: fake-ip
-  fake-ip-range: 198.18.0.1/16
+  default-nameserver:
+    - 119.29.29.29
+    - 223.5.5.5
+  nameserver:
+    - system
+    - 119.29.29.29
+    - 223.5.5.5
   fake-ip-filter:
     - "*.lan"
     - "lens.l.google.com"
@@ -32,19 +20,11 @@ dns:
     - "*.xboxlive.com"
     - "*.msftncsi.com"
     - "*.msftconnecttest.com"
-  default-nameserver:
-    - 119.29.29.29
-    - 223.5.5.5
-  nameserver:
-    - system
-    - 119.29.29.29
-    - 223.5.5.5
-  fallback:
-    - 8.8.8.8
-    - 1.1.1.1
-  fallback-filter:
-    geoip: true
-    geoip-code: CN
+  skip-cert-verify: true
+
+url-rewrite:
+  - ^https?:\/\/(www.)?g\.cn https://www.google.com 302
+  - ^https?:\/\/(www.)?google\.cn https://www.google.com 302
 
 proxies:
 
@@ -52,75 +32,98 @@ proxy-groups:
   - name: 🚀 Proxy
     type: select
     proxies: [🌏 Auto, 🎯 Direct]
-    url: https://www.gstatic.com/generate_204
-    timeout: 5000
+    interval: 600
+    lazy: true
+    benchmark-url: http://www.gstatic.com/generate_204
+    benchmark-timeout: 5
 
   - name: 🍎 Apple
     type: select
     proxies: [🚀 Proxy, 🎯 Direct]
-    url: https://www.gstatic.com/generate_204
-    timeout: 5000
+    interval: 600
+    lazy: true
+    benchmark-url: http://www.gstatic.com/generate_204
+    benchmark-timeout: 5
 
   - name: 🔍 Google
     type: select
     proxies: [🚀 Proxy, 🎯 Direct]
-    url: https://www.gstatic.com/generate_204
-    timeout: 5000
+    interval: 600
+    lazy: true
+    benchmark-url: http://www.gstatic.com/generate_204
+    benchmark-timeout: 5
 
   - name: 🪟 Microsoft
     type: select
     proxies: [🚀 Proxy, 🎯 Direct]
-    url: https://www.gstatic.com/generate_204
-    timeout: 5000
+    interval: 600
+    lazy: true
+    benchmark-url: http://www.gstatic.com/generate_204
+    benchmark-timeout: 5
 
   - name: 📺 ChinaMedia
     type: select
     proxies: [🎯 Direct, 🚀 Proxy]
-    url: https://www.gstatic.com/generate_204
-    timeout: 5000
+    interval: 600
+    lazy: true
+    benchmark-url: http://www.gstatic.com/generate_204
+    benchmark-timeout: 5
 
   - name: 📽️ GlobalMedia
     type: select
     proxies: [🚀 Proxy, 🎯 Direct]
-    url: https://www.gstatic.com/generate_204
-    timeout: 5000
+    interval: 600
+    lazy: true
+    benchmark-url: http://www.gstatic.com/generate_204
+    benchmark-timeout: 5
 
   - name: 🤖 AI
     type: select
     proxies: [🚀 Proxy, 🎯 Direct]
-    url: https://www.gstatic.com/generate_204
-    timeout: 5000
+    interval: 600
+    lazy: true
+    benchmark-url: http://www.gstatic.com/generate_204
+    benchmark-timeout: 5
 
   - name: 🪙 Crypto
     type: select
     proxies: [🚀 Proxy, 🎯 Direct]
-    url: https://www.gstatic.com/generate_204
-    timeout: 5000
+    interval: 600
+    lazy: true
+    benchmark-url: http://www.gstatic.com/generate_204
+    benchmark-timeout: 5
 
   - name: 🎮 Game
     type: select
     proxies: [🚀 Proxy, 🎯 Direct]
-    url: https://www.gstatic.com/generate_204
-    timeout: 5000
+    interval: 600
+    lazy: true
+    benchmark-url: http://www.gstatic.com/generate_204
+    benchmark-timeout: 5
 
   - name: 📟 Telegram
     type: select
     proxies: [🚀 Proxy, 🎯 Direct]
-    url: https://www.gstatic.com/generate_204
-    timeout: 5000
+    interval: 600
+    lazy: true
+    benchmark-url: http://www.gstatic.com/generate_204
+    benchmark-timeout: 5
 
   - name: 🐠 Final
     type: select
     proxies: [🚀 Proxy, 🎯 Direct]
-    url: https://www.gstatic.com/generate_204
-    timeout: 5000
+    interval: 600
+    lazy: true
+    benchmark-url: http://www.gstatic.com/generate_204
+    benchmark-timeout: 5
 
   - name: 🌏 Auto
-    type: url-test
+    type: fallback
     proxies: []
-    url: https://www.gstatic.com/generate_204
     interval: 600
-    timeout: 5000
+    lazy: true
+    benchmark-url: http://www.gstatic.com/generate_204
+    benchmark-timeout: 5
 
   - name: 🎯 Direct
     type: select

@@ -20,21 +20,23 @@ class Stash
     {
         $servers = $this->servers;
         $user = $this->user;
+
         $appName = config('v2board.app_name', 'V2Board');
         header("subscription-userinfo: upload={$user['u']}; download={$user['d']}; total={$user['transfer_enable']}; expire={$user['expired_at']}");
         header('profile-update-interval: 24');
         header("content-disposition: filename*=UTF-8''".rawurlencode($appName));
+
         // 暂时使用clash配置文件，后续根据Stash更新情况更新
-        $defaultConfig = base_path() . '/resources/rules/default.clash.yaml';
-        $customConfig = base_path() . '/resources/rules/modern.clash.yaml';
+        $defaultConfig = base_path() . '/resources/rules/default.stash.yaml';
+        $customConfig = base_path() . '/resources/rules/custom.stash.yaml';
         if (\File::exists($customConfig)) {
             $config = Yaml::parseFile($customConfig);
         } else {
             $config = Yaml::parseFile($defaultConfig);
         }
+
         $proxy = [];
         $proxies = [];
-
         foreach ($servers as $item) {
             if ($item['type'] === 'shadowsocks') {
                 array_push($proxy, self::buildShadowsocks($user['uuid'], $item));

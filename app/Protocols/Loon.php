@@ -56,18 +56,12 @@ class Loon
             }
         }
 
-        $defaultConfig = base_path() . '/resources/rules/default.loon.conf';
-        $customConfig = base_path() . '/resources/rules/custom.loon.conf';
-        if (\File::exists($customConfig)) {
-            $config = file_get_contents("$customConfig");
-        } else {
-            $config = file_get_contents("$defaultConfig");
-        }
-
         // Subscription link
         $subsURL = Helper::getSubscribeUrl($user['token']);
         $subsDomain = $_SERVER['HTTP_HOST'];
+        $defaultConfig = base_path() . '/resources/rules/default.loon.conf';
 
+        $config = file_get_contents("$defaultConfig");
         $config = str_replace('$subs_link', $subsURL, $config);
         $config = str_replace('$subs_domain', $subsDomain, $config);
         $config = str_replace('$proxies', $proxies, $config);
