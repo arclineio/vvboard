@@ -21,23 +21,59 @@ class Loon
         $servers = $this->servers;
         $user = $this->user;
 
-        $uri = '';
+        $appName = config('v2board.app_name', 'V2Board');
+        header("content-disposition:attachment;filename*=UTF-8''".rawurlencode($appName).".conf");
         header("Subscription-Userinfo: upload={$user['u']}; download={$user['d']}; total={$user['transfer_enable']}; expire={$user['expired_at']}");
 
+        $proxies = '';
+        $proxyGroup = '';
         foreach ($servers as $item) {
             if ($item['type'] === 'shadowsocks') {
-                $uri .= self::buildShadowsocks($user['uuid'], $item);
+                // [Proxy]
+                $proxies .= self::buildShadowsocks($user['uuid'], $item);
+                // [Proxy Group]
+                $proxyGroup .= $item['name'] . ', ';
             }elseif ($item['type'] === 'vmess') {
-                $uri .= self::buildVmess($user['uuid'], $item);
+                // [Proxy]
+                $proxies .= self::buildVmess($user['uuid'], $item);
+                // [Proxy Group]
+                $proxyGroup .= $item['name'] . ', ';
             }elseif ($item['type'] === 'vless' && !$item['flow'] ) { // loon 不支持流控,需要过滤掉
-                $uri .= self::buildVless($user['uuid'], $item);
+                // [Proxy]
+                $proxies .= self::buildVless($user['uuid'], $item);
+                // [Proxy Group]
+                $proxyGroup .= $item['name'] . ', ';
             }elseif ($item['type'] === 'trojan') {
-                $uri .= self::buildTrojan($user['uuid'], $item);
+                // [Proxy]
+                $proxies .= self::buildTrojan($user['uuid'], $item);
+                // [Proxy Group]
+                $proxyGroup .= $item['name'] . ', ';
             }elseif ($item['type'] === 'hysteria' && $item['version'] === 2) { //loon只支持hysteria2
-                $uri .= self::buildHysteria($user['uuid'], $item);
+                // [Proxy]
+                $proxies .= self::buildHysteria($user['uuid'], $item);
+                // [Proxy Group]
+                $proxyGroup .= $item['name'] . ', ';
             }
         }
-        return $uri;
+
+        $defaultConfig = base_path() . '/resources/rules/default.loon.conf';
+        $customConfig = base_path() . '/resources/rules/custom.loon.conf';
+        if (\File::exists($customConfig)) {
+            $config = file_get_contents("$customConfig");
+        } else {
+            $config = file_get_contents("$defaultConfig");
+        }
+
+        // Subscription link
+        $subsURL = Helper::getSubscribeUrl($user['token']);
+        $subsDomain = $_SERVER['HTTP_HOST'];
+
+        $config = str_replace('$subs_link', $subsURL, $config);
+        $config = str_replace('$subs_domain', $subsDomain, $config);
+        $config = str_replace('$proxies', $proxies, $config);
+        $config = str_replace('$proxy_group', rtrim($proxyGroup, ', '), $config);
+
+        return $config;
     }
 
 
@@ -58,7 +94,7 @@ class Loon
             "{$server['port']}",
             "{$server['cipher']}",
             "{$password}",
-            'fast-open=false',
+            'fast-open=true',
             'udp=true'
         ];
         $config = array_filter($config);
@@ -145,7 +181,7 @@ class Loon
         if ($server['tls'] === 1) {
             array_push($config, 'over-tls=true');
             if ($server['network'] === 'tcp')
-                
+
             if ($server['tls_settings']) {
                 $tlsSettings = $server['tls_settings'];
                 if (isset($tlsSettings['allow_insecure']) && !empty($tlsSettings['allow_insecure']))
@@ -153,7 +189,7 @@ class Loon
                 if (isset($tlsSettings['server_name']) && !empty($tlsSettings['server_name']))
                     array_push($config, "tls-name={$tlsSettings['server_name']}");
             }
-        }elseif($server['tls'] === 2){ // reality 暂不被 loon 支持 
+        }elseif($server['tls'] === 2){ // reality 暂不被 loon 支持
             return '';
         }
         if ($server['network'] === 'ws') {
@@ -171,7 +207,7 @@ class Loon
         $uri .= "\r\n";
         return $uri;
     }
-    
+
     public static function buildTrojan($password, $server)
     {
         $config = [
@@ -201,7 +237,7 @@ class Loon
         $uri .= "\r\n";
         return $uri;
     }
-    
+
     public static function buildHysteria($password, $server)
     {
 
