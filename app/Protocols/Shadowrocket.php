@@ -21,22 +21,61 @@ class Shadowrocket
         $servers = $this->servers;
         $user = $this->user;
 
-        $uri = '';
-        //display remaining traffic and expire date
+        $appName = config('v2board.app_name', 'V2Board');
+        header('Content-Disposition: attachment; filename="'.$appName.'.conf"');
+
+        $proxies = '';
+        $proxyGroup = '';
+
+        foreach ($this->servers as $server) {
+            if ($item['type'] === 'shadowsocks') {
+                // [Proxy]
+                $proxies .= self::buildShadowsocks($user['uuid'], $item);
+                // [Proxy Group]
+                $proxyGroup .= $item['name'] . ', ';
+            }elseif ($server['type'] === 'vmess'){
+                // [Proxy]
+                $proxies .= self::buildVmess($user['uuid'], $item);
+                // [Proxy Group]
+                $proxyGroup .= $item['name'] . ', ';
+            }elseif ($item['type'] === 'trojan') {
+                // [Proxy]
+                $proxies .= self::buildTrojan($user['uuid'], $item);
+                // [Proxy Group]
+                $proxyGroup .= $item['name'] . ', ';
+            }elseif ($item['type'] === 'hysteria' && $item['version'] === 2) { //surge只支持hysteria2
+                // [Proxy]
+                $proxies .= self::buildHysteria($user['uuid'], $item);
+                // [Proxy Group]
+                $proxyGroup .= $item['name'] . ', ';
+            }
+        }
+
+        $defaultConfig = base_path() . '/resources/rules/default.sset.conf';
+        $customConfig = base_path() . '/resources/rules/custom.sset.conf';
+        if (\File::exists($customConfig)) {
+            $config = file_get_contents("$customConfig");
+        } else {
+            $config = file_get_contents("$defaultConfig");
+        }
+
+        // Subscription link
+        $subsURL = Helper::getSubscribeUrl($user['token']);
+        $subsDomain = $_SERVER['HTTP_HOST'];
+
+        $config = str_replace('$subs_link', $subsURL, $config);
+        $config = str_replace('$subs_domain', $subsDomain, $config);
+        $config = str_replace('$proxies', $proxies, $config);
+        $config = str_replace('$proxy_group', rtrim($proxyGroup, ', '), $config);
+
         $upload = round($user['u'] / (1024*1024*1024), 2);
         $download = round($user['d'] / (1024*1024*1024), 2);
         $totalTraffic = round($user['transfer_enable'] / (1024*1024*1024), 2);
         $expiredDate = date('Y-m-d', $user['expired_at']);
-        $uri .= "STATUS=🚀↑:{$upload}GB,↓:{$download}GB,TOT:{$totalTraffic}GB💡Expires:{$expiredDate}\r\n";
+        $subscribeInfo = "STATUS=↑:{$upload}GB, ↓:{$download}GB, TOT:{$totalTraffic}GB, Expires:{$expiredDate}\r\n";
+        $config = str_replace('$subscribe_info', $subscribeInfo, $config);
 
-        foreach ($this->servers as $server) {
-            if ($server['type'] === 'vmess'){
-                $uri .= self::buildVmess($user['uuid'], $server);
-            } else {
-                $uri .= Helper::buildUri($this->user['uuid'], $server);
-            }
-        }
-        return base64_encode($uri);
+        return $config;
     }
 
     public static function buildVmess($uuid, $server)
