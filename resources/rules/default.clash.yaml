@@ -70,13 +70,7 @@ proxy-groups:
     url: https://www.gstatic.com/generate_204
     timeout: 5000
 
-  - name: 📺 ChinaMedia
-    type: select
-    proxies: [🎯 Direct, 🚀 Proxy]
-    url: https://www.gstatic.com/generate_204
-    timeout: 5000
-
-  - name: 📽️ GlobalMedia
+  - name: 📺 GlobalMedia
     type: select
     proxies: [🚀 Proxy, 🎯 Direct]
     url: https://www.gstatic.com/generate_204
@@ -103,6 +97,12 @@ proxy-groups:
   - name: 📟 Telegram
     type: select
     proxies: [🚀 Proxy, 🎯 Direct]
+    url: https://www.gstatic.com/generate_204
+    timeout: 5000
+
+  - name: 🇨🇳 China
+    type: select
+    proxies: [🎯 Direct, 🚀 Proxy]
     url: https://www.gstatic.com/generate_204
     timeout: 5000
 
@@ -296,6 +296,15 @@ rule-providers:
       url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Global/Global_Classical_No_Resolve.yaml,
       path: "./RuleProviders/Global.yaml",
     }
+  ChinaMax:
+    {
+      type: http,
+      behavior: classical,
+      format: yaml,
+      interval: 86400,
+      url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/ChinaMax/ChinaMax_Classical_No_Resolve.yaml,
+      path: "./RuleProviders/ChinaMax.yaml",
+    }
   Lan:
     {
       type: http,
@@ -311,12 +320,11 @@ rules:
   - RULE-SET, Google, 🔍 Google
   - RULE-SET, Microsoft, 🪟 Microsoft
   - RULE-SET, GitHub, 🪟 Microsoft
-  - RULE-SET, ChinaMedia, 📺 ChinaMedia
-  - RULE-SET, HBO, 📽️ GlobalMedia
-  - RULE-SET, Disney, 📽️ GlobalMedia
-  - RULE-SET, TikTok, 📽️ GlobalMedia
-  - RULE-SET, Netflix, 📽️ GlobalMedia
-  - RULE-SET, GlobalMedia, 📽️ GlobalMedia
+  - RULE-SET, HBO, 📺 GlobalMedia
+  - RULE-SET, Disney, 📺 GlobalMedia
+  - RULE-SET, TikTok, 📺 GlobalMedia
+  - RULE-SET, Netflix, 📺 GlobalMedia
+  - RULE-SET, GlobalMedia, 📺 GlobalMedia
   - RULE-SET, OpenAI, 🤖 AI
   - RULE-SET, Gemini, 🤖 AI
   - RULE-SET, Copilot, 🤖 AI
@@ -326,6 +334,7 @@ rules:
   - RULE-SET, Game, 🎮 Game
   - RULE-SET, Telegram, 📟 Telegram
   - RULE-SET, Global, 🚀 Proxy
+  - RULE-SET, ChinaMax, 🇨🇳 China
   - RULE-SET, Lan, 🎯 Direct
   - GEOIP, CN, 🎯 Direct
   - MATCH, 🐠 Final

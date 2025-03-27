@@ -27,6 +27,8 @@ url-rewrite:
   - ^https?:\/\/(www.)?google\.cn https://www.google.com 302
 
 proxies:
+  - name: 🎯 Direct
+    type: direct
 
 proxy-groups:
   - name: 🚀 Proxy
@@ -61,15 +63,7 @@ proxy-groups:
     benchmark-url: http://www.gstatic.com/generate_204
     benchmark-timeout: 5
 
-  - name: 📺 ChinaMedia
-    type: select
-    proxies: [🎯 Direct, 🚀 Proxy]
-    interval: 600
-    lazy: true
-    benchmark-url: http://www.gstatic.com/generate_204
-    benchmark-timeout: 5
-
-  - name: 📽️ GlobalMedia
+  - name: 📺 GlobalMedia
     type: select
     proxies: [🚀 Proxy, 🎯 Direct]
     interval: 600
@@ -109,6 +103,14 @@ proxy-groups:
     benchmark-url: http://www.gstatic.com/generate_204
     benchmark-timeout: 5
 
+  - name: 🇨🇳 China
+    type: select
+    proxies: [🎯 Direct, 🚀 Proxy]
+    interval: 600
+    lazy: true
+    benchmark-url: http://www.gstatic.com/generate_204
+    benchmark-timeout: 5
+
   - name: 🐠 Final
     type: select
     proxies: [🚀 Proxy, 🎯 Direct]
@@ -119,16 +121,11 @@ proxy-groups:
 
   - name: 🌏 Auto
     type: fallback
-    proxies: []
+    proxies: [/^((?!Tunnel|Volcengine).)*$/]
     interval: 600
     lazy: true
     benchmark-url: http://www.gstatic.com/generate_204
     benchmark-timeout: 5
-
-  - name: 🎯 Direct
-    type: select
-    proxies: [DIRECT, /""/]
-    hidden: true
 
 rule-providers:
   Apple:
@@ -302,6 +299,15 @@ rule-providers:
       url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Global/Global_Classical_No_Resolve.yaml,
       path: "./RuleProviders/Global.yaml",
     }
+  ChinaMax:
+    {
+      type: http,
+      behavior: classical,
+      format: yaml,
+      interval: 86400,
+      url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/ChinaMax/ChinaMax_Classical_No_Resolve.yaml,
+      path: "./RuleProviders/ChinaMax.yaml",
+    }
   Lan:
     {
       type: http,
@@ -317,12 +323,11 @@ rules:
   - RULE-SET, Google, 🔍 Google
   - RULE-SET, Microsoft, 🪟 Microsoft
   - RULE-SET, GitHub, 🪟 Microsoft
-  - RULE-SET, ChinaMedia, 📺 ChinaMedia
-  - RULE-SET, HBO, 📽️ GlobalMedia
-  - RULE-SET, Disney, 📽️ GlobalMedia
-  - RULE-SET, TikTok, 📽️ GlobalMedia
-  - RULE-SET, Netflix, 📽️ GlobalMedia
-  - RULE-SET, GlobalMedia, 📽️ GlobalMedia
+  - RULE-SET, HBO, 📺 GlobalMedia
+  - RULE-SET, Disney, 📺 GlobalMedia
+  - RULE-SET, TikTok, 📺 GlobalMedia
+  - RULE-SET, Netflix, 📺 GlobalMedia
+  - RULE-SET, GlobalMedia, 📺 GlobalMedia
   - RULE-SET, OpenAI, 🤖 AI
   - RULE-SET, Gemini, 🤖 AI
   - RULE-SET, Copilot, 🤖 AI
@@ -332,6 +337,7 @@ rules:
   - RULE-SET, Game, 🎮 Game
   - RULE-SET, Telegram, 📟 Telegram
   - RULE-SET, Global, 🚀 Proxy
+  - RULE-SET, ChinaMax, 🇨🇳 China
   - RULE-SET, Lan, 🎯 Direct
-  - GEOIP, CN, 🎯 Direct
+  - GEOIP, CN, 🇨🇳 China
   - MATCH, 🐠 Final
